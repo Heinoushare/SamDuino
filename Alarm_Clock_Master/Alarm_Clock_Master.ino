@@ -1,12 +1,19 @@
 #include "SevSeg.h"
 SevSeg sevseg; //Initiate a seven segment controller object
 
+
+
+
 String askHour="What hour of the day is it?";
 String askMinute="What minute of the hour is it?";
 String askAlarmDay="Would you like me to sound your alarm today, tomorrow, or never?";
 String askAlarmHour="What hour of the day would you like me to sound your alarm?";
 String askAlarmMinute="What minute of the hour would you like me to sound your alarm?";
 int alarmPin=12;
+int buttonPin=53;
+int displayState=1;
+int buttonNew;
+int buttonOld=1;
 int hour;
 int minute;
 String alarmDay;
@@ -46,9 +53,245 @@ byte colPins[COLS] = {9, 8, 7, 6}; //connect to the column pinouts of the keypad
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 
+void todaySubroutine() {
+  millisTime=millis()+60000;
+  while (hour<alarmHour) {
+    hd=hour;
+    md=minute;
+    hd=hd*100;
+    hd=hd+md;
+    displayOnOff();
+    if (millisTime<=millis()) {
+      minute++;
+      millisTime=millis()+60000;
+    }
+
+    
+
+    if (minute>=60) {
+      minute=0;
+      hour++;
+    }
+
+
+  }
+    millisTime=millis()+60000;
+    while (hour<=alarmHour && minute<alarmMinute) {
+    hd=hour;
+    md=minute;
+    hd=hd*100;
+    hd=hd+md;
+    displayOnOff();
+    if (millisTime<=millis()) {
+        minute++;
+        millisTime=millis()+60000;
+    }
+
+    
+
+    }
+    if (minute>=60) {
+      minute=0;
+      hour++;
+    }
+    if (hour>=24) {
+      hour=0;
+      minute=0;
+    }
+
+    
+
+  
+
+    soundAlarm();
+
+    millisTime=millis()+60000;
+    while (hour<24) {
+      hd=hour;
+      md=minute;
+      hd=hd*100;
+      hd=hd+md;
+      displayOnOff();
+      if (millisTime<=millis()) {
+        minute++;
+        millisTime=millis()+60000;
+      }
+
+
+      if (minute>=60) {
+        hour++;
+        minute=0;
+      }
+
+    hour=0;
+    minute=0;
+}
+}
+
+
+void neverSubroutine() {
+  millisTime=millis()+60000;
+  for (y=0;y<=1;) {
+    if (millisTime<=millis()) {
+      minute++;
+      millisTime=millis()+60000;
+    }
+    if (minute>=60) {
+      minute=0;
+      hour++;
+    }
+    if (hour>=24) {
+      hour=0;
+      minute=0;
+    }
+    hd=hour;
+    md=minute;
+    hd=hd*100;
+    hd=hd+md;
+    
+    displayOnOff();
+
+
+
+
+
+  }
+}
+
+
+
+void tomorrowSubroutine() {
+  millisTime=millis()+60000;
+  while (hour<24) {
+    hd=hour;
+    md=minute;
+    hd=hd*100;
+    hd=hd+md;
+    displayOnOff();
+    if (millisTime<=millis()) {
+        minute++;
+        millisTime=millis()+60000;
+    }
+
+    
+
+    
+    if (minute>=60) {
+      minute=00;
+      hour++;
+    }
+
+  }
+  hour=0;
+  minute=0;
+
+  millisTime=millis()+60000;
+  while (hour<alarmHour) {
+    hd=hour;
+    md=minute;
+    hd=hd*100;
+    hd=hd+md;
+    displayOnOff();
+    if (millisTime<=millis()) {
+        minute++;
+        millisTime=millis()+60000;
+      }
+    if (minute>=60) {
+      minute=0;
+      hour++;
+    }
+}
+    millisTime=millis()+60000;
+    while (hour<=alarmHour && minute<alarmMinute) {
+      if (millisTime<=millis()) {
+        minute++;
+        millisTime=millis()+60000;
+      }
+      
+      if (minute>=60) {
+          minute=0;
+          hour++;
+        }
+        if (hour>=24) {
+          hour=0;
+          minute=0;
+        }
+      hd=hour;
+      md=minute;
+      hd=hd*100;
+      hd=hd+md;
+      displayOnOff();
+      }
+      
+
+  
+    soundAlarm();
+}
+
+
+void soundAlarm() {
+  for (j=0;j<=120;j=j+1) {
+      sevseg.refreshDisplay();
+      digitalWrite(alarmPin,HIGH);
+      sevseg.refreshDisplay();
+      dt2=random(10,500);
+      sevseg.refreshDisplay();
+      dt3=dt3+dt2;
+      sevseg.refreshDisplay();
+      delay(dt2);
+      sevseg.refreshDisplay();
+      digitalWrite(alarmPin,LOW);
+      sevseg.refreshDisplay();
+      dt2=random(10,500);
+      sevseg.refreshDisplay();
+      dt3=dt3+dt2;
+      sevseg.refreshDisplay();
+      delay(dt2);
+    }
+}
+
+
+void displayOnOff() {
+  if (displayState==1) {
+      sevseg.setNumber(hd,2);
+      sevseg.refreshDisplay();
+    }
+    if (displayState==-1) {
+      shutdownDisplay();
+    }
+
+    buttonNew=digitalRead(buttonPin);
+
+    if (buttonNew==1) {
+
+      displayState=displayState*-1;
+
+
+    while (buttonNew==1) {
+      buttonNew=digitalRead(buttonPin);
+      sevseg.refreshDisplay();
+    }
+    }
+}
+void shutdownDisplay() {
+  digitalWrite(22, LOW);
+  digitalWrite(23, LOW);
+  digitalWrite(24, LOW);
+  digitalWrite(25, LOW);
+  digitalWrite(26, LOW);
+  digitalWrite(27, LOW);
+  digitalWrite(28, LOW);
+  digitalWrite(29, LOW);
+  digitalWrite(30, LOW);
+  digitalWrite(31, LOW);
+  digitalWrite(32, LOW);
+  digitalWrite(33, LOW);
+}
+
 void setup() {
   // put your setup code here, to run once:
 pinMode(alarmPin,OUTPUT);
+pinMode(buttonPin,INPUT);
 Serial.begin(9600);
 
 byte numDigits = 4;  
@@ -219,217 +462,16 @@ for (j=0;j<1000;j=j+1) {
 
 void loop() {
   // put your main code here, to run repeatedly:
-if (alarmDay.equalsIgnoreCase("today")) {
-  millisTime=millis()+60000;
-  while (hour<alarmHour) {
-    hd=hour;
-    md=minute;
-    hd=hd*100;
-    hd=hd+md;
-    sevseg.refreshDisplay();
-    sevseg.setNumber(hd, 2);
-    if (millisTime<=millis()) {
-      minute++;
-      millisTime=millis()+60000;
-    }
-    sevseg.refreshDisplay();
-    
-
-    if (minute>=60) {
-      minute=0;
-      hour++;
-    }
-
-
-  }
-    millisTime=millis()+60000;
-    while (hour<=alarmHour && minute<alarmMinute) {
-    hd=hour;
-    md=minute;
-    hd=hd*100;
-    hd=hd+md;
-    sevseg.refreshDisplay();
-    sevseg.setNumber(hd, 2);
-    if (millisTime<=millis()) {
-        minute++;
-        millisTime=millis()+60000;
-    }
-    sevseg.refreshDisplay();
-    
-
-    }
-    if (minute>=60) {
-      minute=0;
-      hour++;
-    }
-    if (hour>=24) {
-      hour=0;
-      minute=0;
-    }
-
-    
-
-  
-
-    for (j=0;j<=120;j=j+1) {
-      sevseg.refreshDisplay();
-      digitalWrite(alarmPin,HIGH);
-      sevseg.refreshDisplay();
-      dt2=random(10,500);
-      sevseg.refreshDisplay();
-      dt3=dt3+dt2;
-      sevseg.refreshDisplay();
-      delay(dt2);
-      sevseg.refreshDisplay();
-      digitalWrite(alarmPin,LOW);
-      sevseg.refreshDisplay();
-      dt2=random(10,500);
-      sevseg.refreshDisplay();
-      dt3=dt3+dt2;
-      sevseg.refreshDisplay();
-      delay(dt2);
-    }
-
-    millisTime=millis()+60000;
-    while (hour<24) {
-      hd=hour;
-      md=minute;
-      hd=hd*100;
-      hd=hd+md;
-      sevseg.refreshDisplay();
-      sevseg.setNumber(hd, 2);
-      if (millisTime<=millis()) {
-        minute++;
-        millisTime=millis()+60000;
-      }
-      sevseg.refreshDisplay();
-
-      if (minute>=60) {
-        hour++;
-        minute=0;
-      }
-
-    hour=0;
-    minute=0;
-}
+if (alarmDay.equalsIgnoreCase("Today")) {
+  todaySubroutine();
 }
 
 if (alarmDay.equalsIgnoreCase("tomorrow")) {
-  millisTime=millis()+60000;
-  while (hour<24) {
-    hd=hour;
-    md=minute;
-    hd=hd*100;
-    hd=hd+md;
-    sevseg.refreshDisplay();
-    sevseg.setNumber(hd, 2);
-    if (millisTime<=millis()) {
-        minute++;
-        millisTime=millis()+60000;
-    }
-    sevseg.refreshDisplay();
-    
-
-    
-    if (minute>=60) {
-      minute=00;
-      hour++;
-    }
-
-  }
-  hour=0;
-  minute=0;
-
-  millisTime=millis()+60000;
-  while (hour<alarmHour) {
-    hd=hour;
-    md=minute;
-    hd=hd*100;
-    hd=hd+md;
-    sevseg.refreshDisplay();
-    sevseg.setNumber(hd, 2);
-    sevseg.refreshDisplay();
-    if (millisTime<=millis()) {
-        minute++;
-        millisTime=millis()+60000;
-      }
-    if (minute>=60) {
-      minute=0;
-      hour++;
-    }
-}
-    millisTime=millis()+60000;
-    while (hour<=alarmHour && minute<alarmMinute) {
-      if (millisTime<=millis()) {
-        minute++;
-        millisTime=millis()+60000;
-      }
-      
-      if (minute>=60) {
-          minute=0;
-          hour++;
-        }
-        if (hour>=24) {
-          hour=0;
-          minute=0;
-        }
-      hd=hour;
-      md=minute;
-      hd=hd*100;
-      hd=hd+md;
-      sevseg.refreshDisplay();
-      sevseg.setNumber(hd, 2);
-      sevseg.refreshDisplay();
-      }
-      
-
-  
-    for (j=0;j<=120;j=j+1) {
-      sevseg.refreshDisplay();
-      digitalWrite(alarmPin,HIGH);
-      sevseg.refreshDisplay();
-      dt2=random(10,500);
-      sevseg.refreshDisplay();
-      dt3=dt3+dt2;
-      sevseg.refreshDisplay();
-      delay(dt2);
-      sevseg.refreshDisplay();
-      digitalWrite(alarmPin,LOW);
-      sevseg.refreshDisplay();
-      dt2=random(10,500);
-      sevseg.refreshDisplay();
-      dt3=dt3+dt2;
-      sevseg.refreshDisplay();
-      delay(dt2);
-    }
+  tomorrowSubroutine();
 
 }
 
 if (alarmDay.equalsIgnoreCase("Never")) {
-  millisTime=millis()+60000;
-  for (y=0;y<=1;) {
-    if (millisTime<=millis()) {
-      minute++;
-      millisTime=millis()+60000;
-    }
-    if (minute>=60) {
-      minute=0;
-      hour++;
-    }
-    if (hour>=24) {
-      hour=0;
-      minute=0;
-    }
-    hd=hour;
-    md=minute;
-    hd=hd*100;
-    hd=hd+md;
-    sevseg.setNumber(hd, 2);
-    sevseg.refreshDisplay();
-
-
-
-
-  }
+  neverSubroutine();
 }
 }
