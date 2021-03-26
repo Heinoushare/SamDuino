@@ -331,6 +331,7 @@ for (j=0;j<1000;j=j+1) {
 delay(1);
 sevseg.refreshDisplay();
 }
+shutdownDisplay();
 Serial.println(askMinute);
 for (j=0;j<2;) {
     char key = keypad.getKey();
@@ -358,6 +359,7 @@ for (j=0;j<1000;j=j+1) {
 delay(1);
 sevseg.refreshDisplay();
 }
+shutdownDisplay();
 Serial.println(askAlarmDay);
 for (j=0;j<1;) {
     char key = keypad.getKey();
@@ -381,6 +383,7 @@ if (p1=="A") {
     delay(1);
     sevseg.refreshDisplay();
   }
+  shutdownDisplay();
 }
 if (p1=="B") {
   alarmDay="Tomorrow";
@@ -390,6 +393,7 @@ if (p1=="B") {
     delay(1);
     sevseg.refreshDisplay();
   }
+  shutdownDisplay();
 }
 
 if (p1=="C") {
@@ -400,6 +404,7 @@ if (p1=="C") {
     delay(1);
     sevseg.refreshDisplay();
   }
+  shutdownDisplay();
 }
 if (alarmDay.equalsIgnoreCase("Today") || alarmDay.equalsIgnoreCase("Tomorrow")) {
 Serial.println(askAlarmHour);
@@ -429,6 +434,7 @@ for (j=0;j<1000;j=j+1) {
   delay(1);
   sevseg.refreshDisplay();
 }
+shutdownDisplay();
 Serial.println(askAlarmMinute);
 for (j=0;j<2;) {
     char key = keypad.getKey();
@@ -456,6 +462,7 @@ for (j=0;j<1000;j=j+1) {
   delay(1);
   sevseg.refreshDisplay();
   }
+  shutdownDisplay();
 }
 
 }
