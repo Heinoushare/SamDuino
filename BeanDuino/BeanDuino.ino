@@ -64,13 +64,15 @@ void setup() {
   delay(dt);
   buttonValue = digitalRead(buttonPin);
   while (buttonValue >= 0) {
-    
+    lightLevel = analogRead(lightPin);
     buttonValue = digitalRead(buttonPin);
-    Serial.println(buttonValue);
+    
     if (buttonValue < 1) {
-      Serial.println("Button value equals 0.");
+      
       break;
     }
+
+    
     delay(dt);
   }
 
@@ -80,7 +82,7 @@ void setup() {
   }
 
   else {
-    sunLevel = sunLevel - 50;
+    sunLevel = sunLevel - 15;
   }
   Serial.print("Photoresistor calibrated to: ");
   Serial.println(sunLevel);
@@ -92,19 +94,24 @@ void loop() {
   // put your main code here, to run repeatedly:
   
   lightLevel = analogRead(lightPin);
-  digitalWrite(ledPin, LOW);
+  
   if (lightLevel < sunLevel) {
+    digitalWrite(ledPin, LOW);
     
     delay(dt);
     Serial.println("Please calibrate photresistor");
     delay(dt);
     buttonValue = digitalRead(buttonPin);
     while (buttonValue >= 0) {
-      
+      lightLevel = analogRead(lightPin);
       buttonValue = digitalRead(buttonPin);
-      Serial.println(buttonValue);
+      
       if (buttonValue < 1) {
-        Serial.println("Button value equals 0.");
+        
+        break;
+      }
+
+      if (lightLevel >= sunLevel) {
         break;
       }
       delay(dt);
@@ -116,7 +123,7 @@ void loop() {
     }
 
     else {
-      sunLevel = sunLevel - 50;
+      sunLevel = sunLevel - 15;
     }
     Serial.print("Photoresistor calibrated to: ");
     Serial.println(sunLevel);
