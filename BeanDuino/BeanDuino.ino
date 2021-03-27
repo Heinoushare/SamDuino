@@ -38,6 +38,7 @@ void readWaterLevel() {
 
 // LED setup stuff
 int ledPin = 13;
+int dimLightPin = 3;
 
 // Execute Order Photoresistor stuff
 int lightLevel;
@@ -56,6 +57,7 @@ void setup() {
   pinMode(resPin, INPUT); // PINMODE!!! I almost forgot about this.
   pinMode(lightPin, INPUT); // Pinmode for Photoresistor
   pinMode(ledPin, OUTPUT); // Pinmode for LED
+  pinMode(dimLightPin, OUTPUT);
   Serial.begin(9600); // Start the serial monitor (good ol' 9600)
   digitalWrite(ledPin, LOW);
 
@@ -94,6 +96,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   
   lightLevel = analogRead(lightPin);
+  lightLevel = lightLevel * (255. / 1023.);
+  analogWrite(dimLightPin, lightLevel);
+  lightLevel = analogRead(lightPin);
   
   if (lightLevel < sunLevel) {
     digitalWrite(ledPin, LOW);
@@ -114,6 +119,9 @@ void loop() {
       if (lightLevel >= sunLevel) {
         break;
       }
+      lightLevel = lightLevel * (255. / 1023.);
+      analogWrite(dimLightPin, lightLevel);
+      
       delay(dt);
     }
   
