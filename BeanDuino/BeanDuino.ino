@@ -6,6 +6,7 @@ int lightFirstDigit;
 int lightFirstDigitClone;
 int lightSecondDigit;
 int lightThirdDigit;
+int sunLevel = 750;
 
 #include "SevSeg.h"
 SevSeg sevseg; 
@@ -120,7 +121,7 @@ void loop() {
       
     lightLevel = analogRead(lightPin);
     Serial.println(lightFirstDigitClone);
-    if (lightLevel < 530) {
+    if (lightLevel < sunLevel) {
       
       digitalWrite(ledPin, LOW);
      }
@@ -150,7 +151,7 @@ void loop() {
       
     lightLevel = analogRead(lightPin);
     //Serial.println(lightLevel);
-    if (lightLevel < 530) {
+    if (lightLevel < sunLevel) {
       
       digitalWrite(ledPin, LOW);
      }
@@ -172,7 +173,7 @@ void loop() {
       
     lightLevel = analogRead(lightPin);
     //Serial.println(lightLevel);
-    if (lightLevel < 530) {
+    if (lightLevel < sunLevel) {
       
       digitalWrite(ledPin, LOW);
      }
@@ -190,7 +191,7 @@ void loop() {
       
     lightLevel = analogRead(lightPin);
     Serial.println(lightLevel);
-    if (lightLevel < 530) {
+    if (lightLevel < sunLevel) {
       
       digitalWrite(ledPin, LOW);
      }
