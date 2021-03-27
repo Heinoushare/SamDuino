@@ -1,34 +1,15 @@
 // BeanDuino
 
-unsigned long millisTime;
-int displayTime = 3000;
-int lightFirstDigit;
-int lightFirstDigitClone;
-int lightSecondDigit;
-int lightThirdDigit;
-int sunLevel = 750;
-
-#include "SevSeg.h"
-SevSeg sevseg; 
-
-void shutdownDisplay() {
-  digitalWrite(1, LOW);
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
-  digitalWrite(4, LOW);
-  digitalWrite(5, LOW);
-  digitalWrite(6, LOW);
-  digitalWrite(7, LOW);
-  digitalWrite(8, LOW);
-  digitalWrite(9, LOW);
-}
+// Setup Button hack
+int buttonPin=12;
+int buttonValue;
 
 
 // Water level stuff
 int resVal; // Sensor Value
 int resPin = A5; // Sensor Pin
 
-int dt = 500; // Delay Time
+int dt = 100; // Delay Time
 
 void readWaterLevel() {
   resVal = analogRead(resPin); //Set the sensor value
@@ -61,143 +42,87 @@ int ledPin = 13;
 // Execute Order Photoresistor stuff
 int lightLevel;
 int lightPin = A0;
+int sunLevel; // You left off here. Make sure to get this set to the photoresistor amount and use this to check if the sun is around. You may want to subtract a bit as a fudge factor; sun levels can change quickly and I don't want to be calibrating this thing every two seconds.
 
-void readLightLevel() {
-  lightLevel = analogRead(lightPin);
-  Serial.println(lightLevel);
-  if (lightLevel < 530) {
-    
-    while (lightLevel < 530) {
-      lightLevel = analogRead(lightPin);
-      Serial.println(lightLevel);
-      Serial.println("Where is the sun!?");
-      digitalWrite(ledPin, LOW);
-      delay(dt);
-      lightLevel = lightLevel * 0.01;
-      Serial.println(lightLevel);
-      sevseg.setNumber(lightLevel);
-      sevseg.refreshDisplay();
-      lightLevel = analogRead(lightPin);
-    }
-    digitalWrite(ledPin, HIGH);
-  }
-}
 // This function will read the light level
 
 void setup() {
   // put your setup code here, to run once:
-
-  byte numDigits = 1;
-  byte digitPins[] = {};
-  byte segmentPins[] = {6, 5, 2, 3, 4, 7, 8, 9};
-  bool resistorsOnSegments = true;
-
-  byte hardwareConfig = COMMON_CATHODE; 
-  sevseg.begin(hardwareConfig, numDigits, digitPins, segmentPins, resistorsOnSegments);
-  sevseg.setBrightness(90);
-
-    
+  
+  pinMode(buttonPin, INPUT);
+  digitalWrite(buttonPin, HIGH);
+  // I know those last two lines make zero sense. It's a button hack. More info here: https://www.youtube.com/watch?v=ChHNI8yt69g&list=PLGs0VKk2DiYw-L-RibttcvK-WBZm8WLEP&index=34
+  
   pinMode(resPin, INPUT); // PINMODE!!! I almost forgot about this.
   pinMode(lightPin, INPUT); // Pinmode for Photoresistor
   pinMode(ledPin, OUTPUT); // Pinmode for LED
   Serial.begin(9600); // Start the serial monitor (good ol' 9600)
+  digitalWrite(ledPin, LOW);
+
+  delay(dt);
+  Serial.println("Please calibrate photresistor");
+  delay(dt);
+  buttonValue = digitalRead(buttonPin);
+  while (buttonValue >= 0) {
+    
+    buttonValue = digitalRead(buttonPin);
+    Serial.println(buttonValue);
+    if (buttonValue < 1) {
+      Serial.println("Button value equals 0.");
+      break;
+    }
+    delay(dt);
+  }
+
+  sunLevel = analogRead(lightPin);
+  if (sunLevel <= 50) {
+      
+  }
+
+  else {
+    sunLevel = sunLevel - 50;
+  }
+  Serial.print("Photoresistor calibrated to: ");
+  Serial.println(sunLevel);
+
   digitalWrite(ledPin, HIGH);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   
-  
-  millisTime = millis() + displayTime;
-  while (millisTime > millis()) {
-    lightLevel = analogRead(lightPin);
-    lightFirstDigit = lightLevel * 0.01;
-    lightFirstDigitClone = lightFirstDigit * 10;
-    //Serial.println(lightFirstDigit);
-    sevseg.setNumber(lightFirstDigit, 0);
-    sevseg.refreshDisplay();
-
-    //Serial.println("1");
-      
-    lightLevel = analogRead(lightPin);
-    Serial.println(lightFirstDigitClone);
-    if (lightLevel < sunLevel) {
-      
-      digitalWrite(ledPin, LOW);
-     }
-  
-     else {
-      digitalWrite(ledPin, HIGH);
-     }
-  }  
-
-  millisTime = millis() + displayTime;
-  while (millisTime > millis()) {
+  lightLevel = analogRead(lightPin);
+  digitalWrite(ledPin, LOW);
+  if (lightLevel < sunLevel) {
     
-    lightFirstDigit = lightFirstDigit * 100;
-    lightSecondDigit = lightLevel - lightFirstDigit;
-    
-    lightSecondDigit = lightSecondDigit * 0.1;
-    //lightFirstDigitClone = lightFirstDigitClone * 10;
-    lightSecondDigit = lightSecondDigit - lightFirstDigitClone;
-    
-    //Serial.println(lightSecondDigit);
-    Serial.println(lightFirstDigitClone);
-    sevseg.setNumber(lightSecondDigit);
-    sevseg.refreshDisplay();
-
-    //Serial.println("2");
-    
+    delay(dt);
+    Serial.println("Please calibrate photresistor");
+    delay(dt);
+    buttonValue = digitalRead(buttonPin);
+    while (buttonValue >= 0) {
       
-    lightLevel = analogRead(lightPin);
-    //Serial.println(lightLevel);
-    if (lightLevel < sunLevel) {
-      
-      digitalWrite(ledPin, LOW);
-     }
+      buttonValue = digitalRead(buttonPin);
+      Serial.println(buttonValue);
+      if (buttonValue < 1) {
+        Serial.println("Button value equals 0.");
+        break;
+      }
+      delay(dt);
+    }
   
-     else {
-      digitalWrite(ledPin, HIGH);
-     }
-  }  
-
-  millisTime = millis() + displayTime;
-  while (millisTime > millis()) {
-    lightSecondDigit = lightSecondDigit * 10;
-    lightThirdDigit = lightFirstDigit + lightSecondDigit;
-    //Serial.println(lightThirdDigit);
-    sevseg.setNumber(lightThirdDigit, 0);
-    sevseg.refreshDisplay();
-
-    //Serial.println("3");
+    sunLevel = analogRead(lightPin);
+    if (sunLevel <= 50) {
       
-    lightLevel = analogRead(lightPin);
-    //Serial.println(lightLevel);
-    if (lightLevel < sunLevel) {
-      
-      digitalWrite(ledPin, LOW);
-     }
+    }
+
+    else {
+      sunLevel = sunLevel - 50;
+    }
+    Serial.print("Photoresistor calibrated to: ");
+    Serial.println(sunLevel);
   
-     else {
-      digitalWrite(ledPin, HIGH);
-     }
-  }  
-
-  millisTime = millis() + 2000;
-  while (millisTime > millis()) {
-    shutdownDisplay();
-
-    //Serial.println("4");
-      
-    lightLevel = analogRead(lightPin);
-    Serial.println(lightLevel);
-    if (lightLevel < sunLevel) {
-      
-      digitalWrite(ledPin, LOW);
-     }
+    digitalWrite(ledPin, HIGH);
   
-     else {
-      digitalWrite(ledPin, HIGH);
-     }
-  }  
+  }
+  
 }
