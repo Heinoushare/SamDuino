@@ -1,5 +1,5 @@
-#include "Adafruit_Sensor.h"
-#include "DHT.h"
+#include "Adafruit_Sensor.h" // This library is mentioned inside of the DHT.h library
+#include "DHT.h" // DHT library
 #include <LiquidCrystal.h>
 #define Type DHT11
 int sensePin=2;
