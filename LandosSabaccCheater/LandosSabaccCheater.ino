@@ -46,4 +46,5 @@ void loop() {
       btnVal = digitalRead(btnPin); // Check if the button is being pressed by setting btnVal to on or off
     }
   }
+  delay(dt); // Delay for dt to avoid the button bouncing
 }
