@@ -2,17 +2,17 @@
 
 // Servo Stuff
 #include <Servo.h> // Include Servo Library
-int servoPin = 9; // Servo is connected to pin 9
+int servoPin = 12; // Servo is connected to pin 9
 int servoPos = 0; // Servo starts at 0 degrees
 int servoStartPos = 0; // Servo starting position (0)
 Servo myServo; // Creating a virtual Servo object myServo
 
 // Button Stuff
-int btnPin = 2; // Button is connected to pin 2
+int btnPin = 3; // Button is connected to pin 2
 int btnVal; // Button value(on or off) has no default value
 
 // Misc.
-int cardOut = 0; // Is the card out? (1=yes, 0=no)
+int cardOut = 0; // Is the card out? (1 = yes, 0 = no)
 int dt = 100; // How many milliseconds to delay for
 
 void setup() {
@@ -27,21 +27,21 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   btnVal = digitalRead(btnPin); // btnVal = On or Off
-  if (btnVal==0) {
+  if (btnVal == 0) {
     // If button is being pressed:
-    if (cardOut==0) {
+    if (cardOut == 0) {
       // If the card has not been pushed out yet
       servoPos = 180; // servoPos = 180
       myServo.write(servoPos); // Move myServo to servoPos degrees
       cardOut = 1; // Set the card to out
     }
-    else if (cardOut==1) {
+    else if (cardOut == 1) {
       // Else if(elif) the card has already been pushed out
       servoPos = 0; // servoPos = 0
       myServo.write(servoPos); // Move myServo to servoPos degrees
       cardOut = 0; // Set the card to retracted
     }
-    while (btnVal==0) {
+    while (btnVal == 0) {
       // While Button is being pressed
       btnVal = digitalRead(btnPin); // Check if the button is being pressed by setting btnVal to on or off
     }
