@@ -2,13 +2,14 @@
 
 // Servo Stuff
 #include <Servo.h> // Include Servo Library
-int servoPin = 12; // Servo is connected to pin 9
+int servoPin = 2; // Servo is connected to pin 9
 int servoPos = 0; // Servo starts at 0 degrees
 int servoStartPos = 0; // Servo starting position (0)
 Servo myServo; // Creating a virtual Servo object myServo
 
 // Button Stuff
-int btnPin = 3; // Button is connected to pin 2
+int btnPin = 12; // Button is connected to pin 2
+int btnGnd = 10;
 int btnVal; // Button value(on or off) has no default value
 
 // Misc.
@@ -17,6 +18,8 @@ int dt = 100; // How many milliseconds to delay for
 
 void setup() {
   // put your setup code here, to run once:
+  pinMode(btnGnd, OUTPUT);
+  digitalWrite(btnGnd, LOW);
   pinMode(btnPin, INPUT); // Set button pin to an input pin
   digitalWrite(btnPin, HIGH); // As you can see, I just blew up the universe by sending a command to an input. More info on this hack: https://www.youtube.com/watch?v=ChHNI8yt69g&t=495s
   Serial.begin(9600); // Start the Serial monitor to easily read variables from the Arduino (9600 baudrate)
