@@ -1,7 +1,8 @@
 // Stackmat Timer
 
 // Libraries
-#include <LiquidCrystal.h>
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
 
 // Ultrasonic Variables
 int trigPin = 5;
@@ -18,16 +19,15 @@ int gPin = 13;
 unsigned long timer;
 
 // LCD Variables
-int rs = 7;
-int en = 8;
-int d4 = 9;
-int d5 = 10;
-int d6 = 11;
-int d7 = 12;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Scramble moves
-String moves[] = {"R", "R'", "R2", "L", "L'", "L2", "U", "U'", "U2", "B", "B'", "B2", "F", "F'", "F2", "D", "D'", "D2"};
+String rMoves[] = {"R", "R\'", "R2"};
+String lMoves[] = {"L", "L\'", "L2"};
+String uMoves[] = {"U", "U\'", "U2"};
+String bMoves[] = {"B", "B\'", "B2"};
+String fMoves[] = {"F", "F\'", "F2"};
+String dMoves[] = {"D", "D\'", "D2"};
 
 void setup() {
   // put your setup code here, to run once:
@@ -42,7 +42,15 @@ void setup() {
   pinMode(gPin, OUTPUT);
 
   // LCD Setup
-  lcd.begin(16,2);
+  lcd.init();     
+  lcd.backlight();
+  lcd.setCursor(0,0);
+                          
+  // Serial Monitor
+  Serial.begin(2000000);
+
+  // Generate Random Seed
+  randomSeed(analogRead(A0));
 
 }
 
@@ -66,11 +74,42 @@ void loop() {
   lcd.clear();
   bool secondLine = false;
 
+  int exclude = 6;
+
   for (int i = 0; i < 20; i++) {
 
-    String cMove = moves[random(0, 21)];
+    int groupNum = exclude;
+    do
+    {
+      groupNum = random(0, 6);
+    } while (groupNum == exclude);
+
+    String group[3];
+
+    String cMove;
+
+    if (groupNum == 0) {
+      cMove = rMoves[random(0, 3)];
+    }
+    else if (groupNum == 1) {
+      cMove = lMoves[random(0, 3)];
+    }
+    else if (groupNum == 2) {
+      cMove = uMoves[random(0, 3)];
+    }
+    else if (groupNum == 3) {
+      cMove = bMoves[random(0, 3)];
+    }
+    else if (groupNum == 4) {
+      cMove = fMoves[random(0, 3)];
+    }
+    else if (groupNum == 5) {
+      cMove = dMoves[random(0, 3)];
+    }
+
+    exclude = groupNum;
     
-    scramble += cMove;
+    scramble += cMove + " ";
 
     if (scramble.length() < 16) {
       lcd.print(cMove);
@@ -83,6 +122,7 @@ void loop() {
       lcd.print(cMove);
     }
   }
+  Serial.println(scramble);
 
   // Waiting for user to remove cube
   while (dTT < 4) {
@@ -152,7 +192,9 @@ void loop() {
 
   // Writing final time
   lcd.clear();
-  lcd.print((double) (millis() - timer) / 1000.);
+  float endTime = (float) (millis() - timer) / 1000.;
+  lcd.print(endTime);
+  Serial.println(endTime);
 
   digitalWrite(gPin, LOW);
 
