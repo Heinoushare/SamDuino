@@ -70,6 +70,8 @@ void loop() {
     dTT = pTD / 2.;
   }
 
+
+  // Generate and show Scramble to user
   String scramble = "";
   lcd.clear();
   bool secondLine = false;
@@ -150,12 +152,56 @@ void loop() {
     dTT = pTD / 2.;
   }
 
+  lcd.clear();
+  lcd.print("Inspect! ");
+
+  // Waiting for user to remove cube
+  while (dTT < 4) {
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    pTT = pulseIn(echoPin, HIGH);
+    delay(25);
+    pTD = (pTT * 765. * 5280. * 12.) / (3600. * 1000000.);
+    dTT = pTD / 2.;
+  }
+
+  // Waiting for user to place cube
+
+  const float countdownStart = 15;
+  unsigned long startTime = millis();
+  
+  while (dTT > 4) {
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    pTT = pulseIn(echoPin, HIGH);
+    delay(25);
+    pTD = (pTT * 765. * 5280. * 12.) / (3600. * 1000000.);
+    dTT = pTD / 2.;
+
+    lcd.clear();
+    lcd.print("Inspect! ");
+    float countdown = countdownStart - (float) ((millis() - startTime) / 1000.);
+    lcd.print(countdown);
+
+    if (countdown <= 0) {
+      lcd.setCursor(0, 1);
+      lcd.print("Time's up!");
+    }
+    
+  }
+
   // Turn on red LED
   digitalWrite(rPin, HIGH);
   delay(100);
 
 
-  // Waiting for user to remove hand
+  // Waiting for user to remove cube
   while (dTT < 4) {
     digitalWrite(trigPin, LOW);
     delayMicroseconds(10);
