@@ -8,7 +8,7 @@ int trigPin = 5;
 int echoPin = 4;
 int pTT;
 float pTD;
-float dTT;
+float dTT = 30; // 30 is a placeholder value
 
 // LED Variables
 int rPin = 3;
@@ -29,14 +29,16 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 void setup() {
   // put your setup code here, to run once:
 
+  // Ultrasonic Sensor Setup
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
 
+
+  // LED Setup
   pinMode(rPin, OUTPUT);
   pinMode(gPin, OUTPUT);
-  
-  Serial.begin(2000000);
 
+  // LCD Setup
   lcd.begin(16,2);
 
 }
@@ -44,13 +46,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  dTT = 30;
-
+  // Waiting for user to place hand
   while (dTT > 5) {
-//    dTT = getDist(trigPin, echoPin);
-
-    Serial.println(dTT);
-
     digitalWrite(trigPin, LOW);
     delayMicroseconds(10);
     digitalWrite(trigPin, HIGH);
@@ -62,11 +59,13 @@ void loop() {
     dTT = pTD / 2.;
   }
 
+  // Turn on red LED
   digitalWrite(rPin, HIGH);
   delay(100);
 
+
+  // Waiting for user to remove hand
   while (dTT < 5) {
-    Serial.println(dTT);
     digitalWrite(trigPin, LOW);
     delayMicroseconds(10);
     digitalWrite(trigPin, HIGH);
@@ -78,13 +77,15 @@ void loop() {
     dTT = pTD / 2.;
   }
 
+  // Starting timer
   timer = millis();
   digitalWrite(rPin, LOW);
   digitalWrite(gPin, HIGH);
   delay(100);
 
+
+  // Waiting for user to place hand
   while (dTT > 5) {
-    Serial.println(dTT);
     lcd.clear();
     lcd.print((double) (millis() - timer) / 1000.);
     digitalWrite(trigPin, LOW);
@@ -98,12 +99,11 @@ void loop() {
     dTT = pTD / 2.;
   }
 
+  // Writing final time
   lcd.clear();
   lcd.print((double) (millis() - timer) / 1000.);
 
   digitalWrite(gPin, LOW);
-
-  delay(200);
 
   while (true) {
     // Waiting for user to reset
