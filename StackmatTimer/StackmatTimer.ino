@@ -1,30 +1,30 @@
 // Stackmat Timer
 
+// Libraries
+#include <LiquidCrystal.h>
+
 // Ultrasonic Variables
-int trigPin = 12;
-int echoPin = 11;
+int trigPin = 5;
+int echoPin = 4;
 int pTT;
 float pTD;
 float dTT;
 
 // LED Variables
 int rPin = 3;
-int gPin = 2;
+int gPin = 13;
 
 // Timer Variables
 unsigned long timer;
 
-float getDist(int trigPin, int echoPin) {
-
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  delay(25);
-  return ((pulseIn(echoPin, HIGH) * 765. * 5280. * 12.) / (3600. * 1000000.)) / 2.;
-  
-}
+// LCD Variables
+int rs = 7;
+int en = 8;
+int d4 = 9;
+int d5 = 10;
+int d6 = 11;
+int d7 = 12;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 void setup() {
   // put your setup code here, to run once:
@@ -35,7 +35,9 @@ void setup() {
   pinMode(rPin, OUTPUT);
   pinMode(gPin, OUTPUT);
   
-  Serial.begin(9600);
+  Serial.begin(2000000);
+
+  lcd.begin(16,2);
 
 }
 
@@ -44,8 +46,10 @@ void loop() {
 
   dTT = 30;
 
-  while (dTT > 4) {
+  while (dTT > 5) {
 //    dTT = getDist(trigPin, echoPin);
+
+    Serial.println(dTT);
 
     digitalWrite(trigPin, LOW);
     delayMicroseconds(10);
@@ -61,7 +65,8 @@ void loop() {
   digitalWrite(rPin, HIGH);
   delay(100);
 
-  while (dTT < 4) {
+  while (dTT < 5) {
+    Serial.println(dTT);
     digitalWrite(trigPin, LOW);
     delayMicroseconds(10);
     digitalWrite(trigPin, HIGH);
@@ -78,7 +83,10 @@ void loop() {
   digitalWrite(gPin, HIGH);
   delay(100);
 
-  while (dTT > 4) {
+  while (dTT > 5) {
+    Serial.println(dTT);
+    lcd.clear();
+    lcd.print((double) (millis() - timer) / 1000.);
     digitalWrite(trigPin, LOW);
     delayMicroseconds(10);
     digitalWrite(trigPin, HIGH);
@@ -90,21 +98,15 @@ void loop() {
     dTT = pTD / 2.;
   }
 
-  Serial.println((double) (millis() - timer) / 1000.);
-  // Placeholder for sevseg displays
+  lcd.clear();
+  lcd.print((double) (millis() - timer) / 1000.);
 
   digitalWrite(gPin, LOW);
 
-  while (dTT < 4) {
-    digitalWrite(trigPin, LOW);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
-    pTT = pulseIn(echoPin, HIGH);
-    delay(25);
-    pTD = (pTT * 765. * 5280. * 12.) / (3600. * 1000000.);
-    dTT = pTD / 2.;
+  delay(200);
+
+  while (true) {
+    // Waiting for user to reset
   }
 
 
