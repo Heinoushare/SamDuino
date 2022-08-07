@@ -26,6 +26,9 @@ int d6 = 11;
 int d7 = 12;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
+// Scramble moves
+String moves[] = {"R", "R'", "R2", "L", "L'", "L2", "U", "U'", "U2", "B", "B'", "B2", "F", "F'", "F2", "D", "D'", "D2"};
+
 void setup() {
   // put your setup code here, to run once:
 
@@ -46,8 +49,56 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  // Waiting for user to place hand
-  while (dTT > 5) {
+  // Waiting for user to place cube
+  while (dTT > 4) {
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    pTT = pulseIn(echoPin, HIGH);
+    delay(25);
+    pTD = (pTT * 765. * 5280. * 12.) / (3600. * 1000000.);
+    dTT = pTD / 2.;
+  }
+
+  String scramble = "";
+  lcd.clear();
+  bool secondLine = false;
+
+  for (int i = 0; i < 20; i++) {
+
+    String cMove = moves[random(0, 21)];
+    
+    scramble += cMove;
+
+    if (scramble.length() < 16) {
+      lcd.print(cMove);
+    }
+    else {
+      if (secondLine == false) {
+        lcd.setCursor(0, 1);
+        secondLine = true;
+      }
+      lcd.print(cMove);
+    }
+  }
+
+  // Waiting for user to remove cube
+  while (dTT < 4) {
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    pTT = pulseIn(echoPin, HIGH);
+    delay(25);
+    pTD = (pTT * 765. * 5280. * 12.) / (3600. * 1000000.);
+    dTT = pTD / 2.;
+  }
+
+  // Waiting for user to place cube
+  while (dTT > 4) {
     digitalWrite(trigPin, LOW);
     delayMicroseconds(10);
     digitalWrite(trigPin, HIGH);
@@ -65,7 +116,7 @@ void loop() {
 
 
   // Waiting for user to remove hand
-  while (dTT < 5) {
+  while (dTT < 4) {
     digitalWrite(trigPin, LOW);
     delayMicroseconds(10);
     digitalWrite(trigPin, HIGH);
@@ -85,7 +136,7 @@ void loop() {
 
 
   // Waiting for user to place hand
-  while (dTT > 5) {
+  while (dTT > 4) {
     lcd.clear();
     lcd.print((double) (millis() - timer) / 1000.);
     digitalWrite(trigPin, LOW);
