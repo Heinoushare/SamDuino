@@ -221,7 +221,7 @@ void loop() {
   delay(100);
 
 
-  // Waiting for user to place hand
+  // Waiting for user to place cube
   while (dTT > 4) {
     lcd.clear();
     lcd.print((double) (millis() - timer) / 1000.);
