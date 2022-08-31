@@ -135,6 +135,9 @@ void loop()
 
   const float countdownStart = 15;
   unsigned long startTime = millis();
+
+  bool plusTwo = false;
+  bool dnf = false;
   
   while (rVal < tRVal || lVal < tLVal) {
     rVal = rPad.capacitiveSensor(30);
@@ -148,9 +151,16 @@ void loop()
     if (countdown <= 0) {
       lcd.setCursor(0, 1);
       lcd.print("Time's up!");
+      plusTwo = true;
+        if (countdown < -2) {
+          dnf = true;
+          plusTwo = false;
+        }
     }
 
   }
+
+  
 
   lcd.clear();
   lcd.print("Go when ready");
@@ -180,8 +190,21 @@ void loop()
   lcd.print(endTime);
   Serial.println(endTime);
 
-  while (true) {
-    // Waiting for user to reset
+  if (dnf == true) {
+    lcd.print(" (DNF)");
   }
+  else if (plusTwo == true) {
+    lcd.print(" (+2)");
+  }
+
+  // Waiting for user to remove hands
+  while (rVal > tRVal || lVal > tLVal) {
+    rVal = rPad.capacitiveSensor(30);
+    lVal = lPad.capacitiveSensor(30);
+  }
+
+//  while (true) {
+//    // Waiting for user to reset
+//  }
   
 }
