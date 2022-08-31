@@ -10,8 +10,8 @@
 CapacitiveSensor rPad = CapacitiveSensor(4, 8);
 CapacitiveSensor lPad = CapacitiveSensor(4, 6);
 
-const long tLVal = 1000;
-const long tRVal = 1000;
+const long tLVal = 200;
+const long tRVal = 900;
 
 long rVal = 0;
 long lVal = 0;
