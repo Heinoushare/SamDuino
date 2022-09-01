@@ -10,8 +10,8 @@
 CapacitiveSensor rPad = CapacitiveSensor(4, 8);
 CapacitiveSensor lPad = CapacitiveSensor(4, 6);
 
-const long tLVal = 200;
-const long tRVal = 900;
+long tLVal = 0;
+long tRVal = 0;
 
 long rVal = 0;
 long lVal = 0;
@@ -43,7 +43,83 @@ void setup()
 
   // Generate Random Seed
   randomSeed(analogRead(A0));
+
+
+  // Calibrate touch pads
   
+//  void reset_CS_AutoCal();
+
+  lcd.print("Please place hands");
+  Serial.println(rPad.capacitiveSensor(30));
+  Serial.println(lPad.capacitiveSensor(30));
+  delay(1000);
+  Serial.println(rPad.capacitiveSensor(30));
+  Serial.println(lPad.capacitiveSensor(30));
+  lcd.clear();
+  lcd.print("Please remove hands");
+  Serial.println(rPad.capacitiveSensor(30));
+  Serial.println(lPad.capacitiveSensor(30));
+  delay(1000);
+  Serial.println(rPad.capacitiveSensor(30));
+  Serial.println(lPad.capacitiveSensor(30));
+  lcd.clear();
+  
+  lcd.print("Please place hands");
+  Serial.println(rPad.capacitiveSensor(30));
+  Serial.println(lPad.capacitiveSensor(30));
+  delay(2000);
+  lcd.setCursor(0, 1);
+  lcd.print("Calibrating...");
+
+  long rLow = 1000000;
+  long lLow = 1000000;
+  
+  for (int i = 0; i < 100; i++) {
+    long rPadVal = rPad.capacitiveSensor(30);
+    long lPadVal = lPad.capacitiveSensor(30);
+
+//    Serial.println(rPadVal);
+//    Serial.println(lPadVal);
+
+    tRVal += rPadVal;
+    tLVal += lPadVal;
+
+    if (rPadVal < rLow) {
+      rLow = rPadVal;
+    }
+
+    if (lPadVal < lLow) {
+      lLow = lPadVal;
+    }
+
+    delay(10);
+  }
+
+//  Serial.println("Pre-mean");
+//  Serial.println(tRVal);
+//  Serial.println(tLVal);
+
+  tRVal = (long) ((double) tRVal / 100.);
+  tLVal = (long) ((double) tLVal / 100.);
+
+//  Serial.println(tRVal);
+//  Serial.println(tLVal);
+
+  tRVal = tRVal - (tRVal - rLow);
+  tRVal = tLVal - (tLVal - lLow);
+
+//  Serial.println(tRVal);
+//  Serial.println(tLVal);
+
+  lcd.clear();
+  lcd.print("Please remove hands");
+
+  // Waiting for user to remove hands
+  while (rVal > tRVal || lVal > tLVal) {
+    rVal = rPad.capacitiveSensor(30);
+    lVal = lPad.capacitiveSensor(30);
+  }
+
 }
 
 void loop()
@@ -53,6 +129,9 @@ void loop()
   while (rVal < tRVal || lVal < tLVal) {
     rVal = rPad.capacitiveSensor(30);
     lVal = lPad.capacitiveSensor(30);
+
+//    Serial.println(rVal);
+//    Serial.println(lVal);
   }
 
   // Generate and show Scramble to user
@@ -108,7 +187,7 @@ void loop()
       lcd.print(cMove);
     }
   }
-  Serial.println(scramble);
+//  Serial.println(scramble);
 
   // Waiting for user to remove hands
   while (rVal > tRVal || lVal > tLVal) {
@@ -188,7 +267,7 @@ void loop()
   lcd.clear();
   float endTime = (float) (millis() - timer) / 1000.;
   lcd.print(endTime);
-  Serial.println(endTime);
+//  Serial.println(endTime);
 
   if (dnf == true) {
     lcd.print(" (DNF)");
