@@ -1,6 +1,5 @@
 // Stackmat Timer V2
 
-
 // Libraries
 #include <CapacitiveSensor.h>
 #include <LiquidCrystal_I2C.h>
@@ -10,9 +9,11 @@
 CapacitiveSensor rPad = CapacitiveSensor(4, 8);
 CapacitiveSensor lPad = CapacitiveSensor(4, 6);
 
+// Hands on sensor thresholds
 long tLVal = 500;
 long tRVal = 500;
 
+// Variable to store sensore values
 long rVal = 0;
 long lVal = 0;
 
@@ -32,9 +33,6 @@ String dMoves[] = {"D", "D\'", "D2"};
 
 void setup()
 {
-
-  // Serial Monitor
-  Serial.begin(9600);
 
   // LCD Setup
   lcd.init();     
@@ -60,20 +58,21 @@ void loop()
   lcd.clear();
   bool secondLine = false;
 
+  // Which move type to exclude in the selection of the move
   int exclude = 6;
 
+  // 20 cycles for 20 scramble steps
   for (int i = 0; i < 20; i++) {
 
+    // Select the move type
     int groupNum = exclude;
     do
     {
       groupNum = random(0, 6);
     } while (groupNum == exclude);
 
-    String group[3];
-
+    // Randomly select a move from the randomly selected move set
     String cMove;
-
     if (groupNum == 0) {
       cMove = rMoves[random(0, 3)];
     }
@@ -93,14 +92,18 @@ void loop()
       cMove = dMoves[random(0, 3)];
     }
 
+    // Update variable to exclude the move type next cycle
     exclude = groupNum;
-    
+
+    // Concatenate scramble string and next scramble step
     scramble += cMove + " ";
 
+    // Print scramble
     if (scramble.length() < 16) {
       lcd.print(cMove);
     }
     else {
+      // If the scramble has become more than 16 chars, print on second line (LCD is 16x2)
       if (secondLine == false) {
         lcd.setCursor(0, 1);
         secondLine = true;
@@ -108,7 +111,6 @@ void loop()
       lcd.print(cMove);
     }
   }
-//  Serial.println(scramble);
 
   // Waiting for user to remove hands
   while (rVal > tRVal || lVal > tLVal) {
@@ -131,7 +133,7 @@ void loop()
     lVal = lPad.capacitiveSensor(30);
   }
 
-  // Waiting for user to place hands
+  // Waiting for user to place hands and start inspection timer
 
   const float countdownStart = 15;
   unsigned long startTime = millis();
@@ -189,8 +191,9 @@ void loop()
   lcd.clear();
   String endTime = String((double) (millis() - timer) / 1000., 3);;
   lcd.print(endTime);
-//  Serial.println(endTime);
+  
 
+  // Write if the user received any penalties from going over inspection time (WCA regs)
   if (dnf == true) {
     lcd.print(" (DNF)");
   }
