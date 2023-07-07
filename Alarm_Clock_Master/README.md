@@ -1,0 +1,1 @@
+An alarm clock that utilizes the built in clock of an Arduino Mega in order to wake you up with minimal time deviation.
