@@ -1,0 +1,1 @@
+An Ardunio device that rolls concealed cards into your hand. It is inspired from the device Lando used to cheat while playing Sabacc in Solo: A Star Wars Story. When the pushbutton is pressed, it either expels or retracts the card inside of the card holder, depending on the current state of the servo.

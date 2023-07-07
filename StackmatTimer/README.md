@@ -1,0 +1,1 @@
+A speedcubing timer that senses the cube with an ultrasonic sensor. It also displays pseudorandom scrambles for a 3x3 Rubik’s cube and times the user’s inspection time.

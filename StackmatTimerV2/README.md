@@ -1,0 +1,1 @@
+A second major iteration of my speedcubing timer, this time using capacitive touch sensors instead of an ultrasonic sensor, as well as some other minor hardware and software changes. Naturally, this project inherits a lot of traits from the first version.
