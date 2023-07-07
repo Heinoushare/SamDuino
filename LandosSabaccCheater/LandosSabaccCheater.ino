@@ -21,7 +21,7 @@ void setup() {
   pinMode(btnGnd, OUTPUT); // btnGnd is an OUTPUT
   digitalWrite(btnGnd, LOW); // Set btnGnd to act like a GND
   pinMode(btnPin, INPUT); // Set button pin to an input pin
-  digitalWrite(btnPin, HIGH); // As you can see, I just blew up the universe by sending a command to an input. More info on this hack: https://www.youtube.com/watch?v=ChHNI8yt69g&t=495s
+  digitalWrite(btnPin, HIGH); // This sends command to an input. More info on this hack: https://www.youtube.com/watch?v=ChHNI8yt69g&t=495s
   Serial.begin(9600); // Start the Serial monitor to easily read variables from the Arduino (9600 baudrate)
   myServo.attach(servoPin); // Attach my virtual myServo object to the servoPin
   myServo.write(servoStartPos); // Move myServo to servoStartPos degrees
