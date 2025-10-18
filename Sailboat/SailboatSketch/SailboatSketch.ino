@@ -11,7 +11,8 @@ const int servoChange = 1;
 
 int sailPin = 5;
 int sailAngle = 90;
-int sailChange = 1;
+int sailChange = 8;
+bool adjustSail = false;
 Servo sail;
 
 int joyBtn = 1;
@@ -26,6 +27,7 @@ int xbeeRST = 2;
 int xbeeRSSI = 4;
 
 bool awake = false;
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -45,6 +47,11 @@ void setup() {
 
   pinMode(xbeeRST, OUTPUT);
   digitalWrite(xbeeRST, HIGH);
+
+  delay(1000);
+  sail.write(sailAngle);
+  rudder.write(rudderAngle);
+  delay(5000);
 
   // Set pin as INPUT_PULLUP to avoid spurious wakeup
 //  pinMode(xbeeRSSI, INPUT_PULLUP);
@@ -67,7 +74,9 @@ void loop() {
     {
       case '-':
         joyBtn = 1;
-        sail.write(sailAngle);
+        // sail.write(sailAngle);
+        adjustSail = true;
+        sailChange = 0;
         rudderChange = 0;
         break;
       
@@ -80,11 +89,17 @@ void loop() {
         break;
         
       case 'S':
-        sail.write(sailAngle + sailChange * 8);
+        // sailAngle += (sailChange * 8);
+        adjustSail = true;
+        sailChange = 8;
+        // sail.write(sailAngle + sailChange);
         break;
   
       case 's':
-        sail.write(sailAngle - sailChange * 8);
+        // sailAngle -= (sailChange * 8);
+        adjustSail = true;
+        sailChange = -8;
+        // sail.write(sailAngle - sailChange);
         break;
   
       case 'R':
@@ -103,6 +118,17 @@ void loop() {
 
   awake = false;
 
+  if (adjustSail) {
+  //   if (sailAngle > 160) {
+  //     sailAngle = 160;
+  //   }
+  //   else if (sailAngle < 5) {
+  //     sailAngle = 0;
+  //   }
+    sail.write(sailAngle + sailChange);
+    adjustSail = false;
+  }
+
 //  if (sailChange != 0 && rudderChange != 0) {
 //    sailChange = 0;
 //  }
@@ -112,12 +138,12 @@ void loop() {
 ////    sailAngle += sailChange * servoChange;
 //     sail.write(sailAngle + sailChange * 8);
 //
-//    if (sailAngle > 160) {
-//      sailAngle = 160;
-//    }
-//    else if (sailAngle < 5) {
-//      sailAngle = 5;
-//    }
+  //  if (sailAngle > 160) {
+  //    sailAngle = 160;
+  //  }
+  //  else if (sailAngle < 5) {
+  //    sailAngle = 5;
+  //  }
 //    awake = true;
 //    delay(cmdDT);
 //  }
