@@ -10,8 +10,8 @@ const int servoChange = 1;
 
 
 int sailPin = 5;
-int sailAngle = 90;
-int sailChange = 8;
+int sailAngle = 87;
+int sailChange = 16;
 bool adjustSail = false;
 Servo sail;
 
@@ -48,10 +48,13 @@ void setup() {
   pinMode(xbeeRST, OUTPUT);
   digitalWrite(xbeeRST, HIGH);
 
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
+
   delay(1000);
   sail.write(sailAngle);
   rudder.write(rudderAngle);
-  delay(5000);
+  delay(4000);
 
   // Set pin as INPUT_PULLUP to avoid spurious wakeup
 //  pinMode(xbeeRSSI, INPUT_PULLUP);
@@ -82,10 +85,12 @@ void loop() {
       
       case 'e':
         joyBtn = 0;
+        digitalWrite(13, HIGH);
         break;
   
       case 'E':
         joyBtn = 1;
+        digitalWrite(13, LOW);
         break;
         
       case 'S':
@@ -156,7 +161,7 @@ void loop() {
     rudderAngle -= rudderChange * servoChange;
 
     if (rudderAngle > 160) {
-      sailAngle = 160;
+      rudderAngle = 160;
     }
     else if (rudderAngle < 5) {
       rudderAngle = 5;
